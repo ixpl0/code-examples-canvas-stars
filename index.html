@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="/favicon.ico">
+  <title>Пять звёзд</title>
+  <style>
+    .wrapper {
+      margin: 0 auto;
+      width: 600px;
+    }
+
+    canvas {
+      display: block;
+    }
+  </style>
+  <script>
+    // кодстайл +- eslint-config-airbnb
+    // сделал в одном файле для простоты запуска
+
+    {
+      const getCanvasClickCoordinates = (e) => {
+        const osZoom = window.devicePixelRatio; // для поправки координат для нестандартного системного зума
+        const canvas = e.target;
+        const { left, top } = canvas.getBoundingClientRect();
+        const x = (e.clientX - left) * osZoom;
+        const y = (e.clientY - top) * osZoom;
+
+        return { x, y };
+      };
+
+      const onStarsCanvasClick = (e) => {
+        const ctx = e.target.getContext('2d');
+        const { x, y } = getCanvasClickCoordinates(e);
+        const [red, green, blue] = ctx.getImageData(x, y, 1, 1).data;
+        const colorElement = document.querySelector('.color');
+        const colorCtx = colorElement.getContext('2d');
+
+        colorCtx.fillStyle = `rgb(${red}, ${green}, ${blue})`;
+        colorCtx.fillRect(0, 0, 600, 50);
+      };
+
+      const initCanvas = (canvas) => {
+        // устранение размытия изображения на холсте при системном зуме !== 100%, например, на ретине
+        // ещё можно было сделать детектирование браузерного зума, тк при его изменении всё ломается.
+        // Но в ТЗ было сказано, что небольшая похабность допускается. А код переусложнять не хочется.
+        // Тк я даже не уверен, что стоило делать под разные системные зумы :)
+        const osZoom = window.devicePixelRatio;
+        const ctx = canvas.getContext('2d');
+
+        if (osZoom !== 1) {
+          const canvasWidth = canvas.width;
+          const canvasHeight = canvas.height;
+
+          canvas.width = canvasWidth * osZoom;
+          canvas.height = canvasHeight * osZoom;
+          canvas.style.width = canvasWidth + 'px';
+          canvas.style.height = canvasHeight + 'px';
+
+          ctx.scale(osZoom, osZoom);
+        }
+
+        return ctx;
+      };
+
+      const drawStar = (ctx, x, y, size, color) => {
+        const starPoints = 5;
+        const pointsCountArray = Array.from({ length: starPoints });
+
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.save();
+        ctx.translate(x, y);
+
+        pointsCountArray.forEach(() => {
+          ctx.rotate(Math.PI * (starPoints - 1) / starPoints);
+          ctx.lineTo(0, -size);
+        });
+
+        ctx.restore();
+        ctx.closePath();
+        ctx.fill();
+      };
+
+      const drawBackground = (ctx) => {
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, 600, 600);
+      };
+
+      const drawStars = (ctx) => {
+        const starColors = ['#e34139', '#4b54fa', '#2fa148', '#fad522', '#241f21'];
+
+        starColors.forEach((color, i) => {
+          const size = 60;
+          const offset = size * (2 * i + 1);
+
+          drawStar(ctx, offset, offset, size, color);
+        });
+      };
+
+      const runApp = () => {
+        const starsElement = document.querySelector('.stars');
+        const starsCtx = initCanvas(starsElement);
+
+        drawBackground(starsCtx);
+        drawStars(starsCtx);
+
+        starsElement.addEventListener('click', onStarsCanvasClick);
+      };
+
+      window.addEventListener('DOMContentLoaded', runApp);
+    }
+  </script>
+</head>
+<body>
+<div class="wrapper">
+  <canvas class="stars" width="600" height="600"></canvas>
+  <canvas class="color" width="600" height="50"></canvas>
+</div>
+</body>
+</html>
