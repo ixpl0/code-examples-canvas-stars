@@ -1,7 +1,7 @@
 #code-example-canvas-stars
 
-Всё просто. Рисуем 5 разноцветных звёзд на canvas.
+Everything is simple. It draws 5 multi-colored stars on the canvas.
 
-Кликаем по картинке, получаем цвет из-под курсора, выводим его.
+On click, we get the color from under the cursor.
 
-Из нюансов: поддержка нестандартного системного зума. Например, у retina зум 200%.
+Support for non-standard system zoom. For example, the retina has a 200% zoom.

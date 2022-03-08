@@ -15,12 +15,12 @@
     }
   </style>
   <script>
-    // кодстайл +- eslint-config-airbnb
-    // сделал в одном файле для простоты запуска
+    // code style +- eslint-config-airbnb
+    // all code in one file is only for simplicity
 
     {
       const getCanvasClickCoordinates = (e) => {
-        const osZoom = window.devicePixelRatio; // для поправки координат для нестандартного системного зума
+        const osZoom = window.devicePixelRatio; // for non-standard system zoom (retina etc)
         const canvas = e.target;
         const { left, top } = canvas.getBoundingClientRect();
         const x = (e.clientX - left) * osZoom;
@@ -41,10 +41,10 @@
       };
 
       const initCanvas = (canvas) => {
-        // устранение размытия изображения на холсте при системном зуме !== 100%, например, на ретине
-        // ещё можно было сделать детектирование браузерного зума, тк при его изменении всё ломается.
-        // Но в ТЗ было сказано, что небольшая похабность допускается. А код переусложнять не хочется.
-        // Тк я даже не уверен, что стоило делать под разные системные зумы :)
+        // elimination of image blur on the canvas with a system zoom !== 100%
+        // for example, on a retina
+        // it was also possible to detect the browser zoom, because when it changes
+        // everything breaks. But it will be in further versions
         const osZoom = window.devicePixelRatio;
         const ctx = canvas.getContext('2d');
 
